@@ -7,7 +7,7 @@ from datetime import date
 
 USERDATA = {
     "user": "admin",
-    "latest_access": "new",
+    "latest_access": str(date.today()),
     "password_cards": [
         {
             "card_id": "1",
@@ -17,6 +17,9 @@ USERDATA = {
         }
     ]
 }
+
+def connect_L0CKER_DB(filePath: str) -> db.DBMS:
+    return db.DBMS(filePath)
 
 def build_L0CK3R_DB(filePath: str) -> db.DBMS:
     L0CK3R_DBMS = db.DBMS(filePath)
@@ -29,7 +32,7 @@ def build_L0CK3R_DB(filePath: str) -> db.DBMS:
        
     #  users(_id_, uname, passwd, registerDate)
     L0CK3R_DBMS.createTable("users",["username VARCHAR PRIMARY KEY NOT NULL", "password BLOB", "registerDate VARCHAR NOT NULL", "userdata JSON"])
-    L0CK3R_DBMS.insertValues("users",[("admin",cy.encrypting("admin", "admin"),str(date.today()), USERDATA)])
+    R3gister(L0CK3R_DBMS, "admin", "admin")
     return L0CK3R_DBMS
 
 def L0CKin(DBMS: db.DBMS, username: str, password: str) -> bool:
@@ -46,6 +49,16 @@ def R3gister(DBMS: db.DBMS, username: str, password: str) -> bool:
     L0CK3R_DBMS = DBMS
     try:
         L0CK3R_DBMS.insertValues("users",[(username, cy.encrypting(password, password), str(date.today()), {})])
+        setUserdata(L0CK3R_DBMS, username, {"user": "admin",
+            "latest_access": str(date.today()),
+            "password_cards": [
+                {
+                    "card_id": "1",
+                    "card_title": "L0CK3R",
+                    "email": username,
+                    "password": password
+                }
+        ]})
         r3gistert = True
     except Exception as e:
         r3gistert = False
@@ -60,16 +73,18 @@ def updateLogin(DBMS: db.DBMS, username: str, new_username: str, password: str) 
     except Exception as e:
         return False
 
-def readUserdata(DBMS: db.DBMS, username: str) -> dict:
+def readUserdata(DBMS: db.DBMS, username: str, pdOutput: bool = False) -> dict:
     L0CK3R_DBMS = DBMS
     try:
-        user_data = L0CK3R_DBMS.execute(f"""SELECT userdata FROM users WHERE username = '{username}'""")
-        if user_data != []:
-            fetched_user = json.loads(user_data[0][0])
-            for i in range(len(fetched_user["password_cards"])):
-                fetched_user["password_cards"][i]["password"] = b64.b64decode(fetched_user["password_cards"][i]["password"].encode("utf-8"))
-                fetched_user["password_cards"][i]["password"] = cy.decrypting(fetched_user["password_cards"][i]["password"], fetched_user["password_cards"][i]["email"])
-                    
+        user_data = L0CK3R_DBMS.execute(f"""SELECT userdata FROM users WHERE username = '{username}'""", pdOutput)
+        if pdOutput == False:
+            if user_data != []:
+                fetched_user = json.loads(user_data[0][0])
+                for i in range(len(fetched_user["password_cards"])):
+                    fetched_user["password_cards"][i]["password"] = b64.b64decode(fetched_user["password_cards"][i]["password"].encode("utf-8"))
+                    fetched_user["password_cards"][i]["password"] = cy.decrypting(fetched_user["password_cards"][i]["password"], fetched_user["password_cards"][i]["email"])
+        else:
+            return user_data           
                     
     except Exception as e:
         print(e)
@@ -94,6 +109,9 @@ def deleteUser(DBMS: db.DBMS, username: str):
     except:
         return False
 
+def closeConnection(DBMS: db.DBMS) -> None:
+    DBMS.disconnectDB()
+    
 """
 DMBS = db.DBMS("backend\\l0ck3rdb.duckdb")
 print(deleteUser(DMBS, "user"))"""
@@ -109,7 +127,6 @@ USERDATA["password_cards"].append(
     {
         "card_id": "2",
         "card_title": "Youtube",
-        "img_path": "../assets/website_images/youtube.png",
         "email": "admin@youtube.com",
         "password": "YTadmin123",
     }
@@ -118,7 +135,6 @@ USERDATA["password_cards"].append(
     {
         "card_id": "3",
         "card_title": "Google",
-        "img_path": "../assets/website_images/google.png",
         "email": "admin@google.com",
         "password": "googleAdmin123",
     }
@@ -127,7 +143,6 @@ USERDATA["password_cards"].append(
     {
         "card_id": "4",
         "card_title": "Instagram",
-        "img_path": "../assets/website_images/instagram.png",
         "email": "admin@instagram.com",
         "password": "instaAdmin123",
     }
@@ -136,53 +151,15 @@ USERDATA["password_cards"].append(
     {
         "card_id": "5",
         "card_title": "Spotify",
-        "img_path": "../assets/website_images/spotify.png",
         "email": "admin@spotify.com",
         "password": "spotiAdmin123",
-    }
-)
-
-TONI_USERDATA["password_cards"].append(
-    {
-        "card_id": "2",
-        "card_title": "Youtube",
-        "img_path": "../assets/website_images/youtube.png",
-        "email": "toni@youtube.com",
-        "password": "YTtoni123",
-    }
-)
-TONI_USERDATA["password_cards"].append(
-    {
-        "card_id": "3",
-        "card_title": "Google",
-        "img_path": "../assets/website_images/google.png",
-        "email": "toni@google.com",
-        "password": "googleToni123",
-    }
-)
-TONI_USERDATA["password_cards"].append(
-    {
-        "card_id": "4",
-        "card_title": "Instagram",
-        "img_path": "../assets/website_images/instagram.png",
-        "email": "toni@instagram.com",
-        "password": "instaToni123",
-    }
-)
-TONI_USERDATA["password_cards"].append(
-    {
-        "card_id": "5",
-        "card_title": "Spotify",
-        "img_path": "../assets/website_images/spotify.png",
-        "email": "toni@spotify.com",
-        "password": "spotiToni123",
     }
 )
 
 
 
 print(setUserdata(DBMS, "admin", USERDATA))
-print(setUserdata(DBMS, "toni", TONI_USERDATA))
+
 print(readUserdata(DBMS, "admin"),type(readUserdata(DBMS, "admin")))
 
 print(L0CKin(DBMS, "admin", "admin"))
@@ -193,6 +170,4 @@ print(L0CKin(DBMS, "admin1", "wrongpassword"))
 print(updateLogin(DBMS, "admin", "admin2", "admin2"))
 print(L0CKin(DBMS, "admin2", "admin2"))
 
-print(readUserdata(DBMS, "admin2"))
-
-#print(updateLogin(DBMS, "admin1", "toni", "admin"))"""
+print(readUserdata(DBMS, "admin2"))"""
