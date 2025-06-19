@@ -6,9 +6,7 @@ import pyperclip as clip
 
 
 class PasswortFrame(ctk.CTkFrame):
-
     def __init__(self, master, id, website, username, password, uncensor):
-
         super().__init__(master)
         self.__id = id
         self.website = website
@@ -38,6 +36,8 @@ class PasswortFrame(ctk.CTkFrame):
         optFrame = ctk.CTkFrame(self, width=200, corner_radius=10, bg_color="grey20")
         optFrame.grid(row = 2, column = 1, sticky = "ew")
         
+        optFrame.grid_columnconfigure(1, weight=1)
+        optFrame.grid_rowconfigure(0, weight=1)
         #col2: censor checkbox
 
         self.censorbox = ctk.CTkCheckBox(optFrame, fg_color= "blue", text= "show", border_color= "blue", text_color= "grey60", corner_radius= 15, command=lambda:self.showPassword(self.getCensor()))
@@ -53,8 +53,11 @@ class PasswortFrame(ctk.CTkFrame):
             self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
             self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
         else:
+            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete Acc", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.deleteUser(), hover_color="#c32a3c")
+            self.deleteButton.grid(row= 0, column= 2, sticky= "e", padx= 10)
+            
             self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
-            self.editButton.grid(row= 0, column= 2, sticky= "e", padx= 10)
+            self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
             
         # col1: text
         self.text2 = ctk.CTkLabel(self, text = f"Password: {password_text}", padx= 10, fg_color="grey30", pady = 5, anchor= "w")
@@ -99,7 +102,12 @@ class PasswortFrame(ctk.CTkFrame):
         self.password = new_password
         self.text1.configure(text=f"Username: {self.username}")
         self.showPassword(self.getCensor())
-        
+    
+    def deleteUser(self) -> None:
+        new_password = ctk.CTkInputDialog(text="Type 'Delete my LOCKER'", title="Do you realy want to delete your Account?").get_input()
+        if new_password == "Delete my LOCKER":
+            dbf.deleteUser(DBMS, username)
+            sys.exit()    
 
 class PasswordScroll(ctk.CTkScrollableFrame):
     def __init__(self, master, values):
@@ -160,9 +168,18 @@ class GUI(ctk.CTk):
 
         self.grid_rowconfigure(0, weight = 1)
         self.grid_columnconfigure(0, weight = 1)
-
+        
         self.test_scroll = PasswordScroll(self, liste)
         self.test_scroll.grid(row= 0, column= 0, sticky= "news")
+        
+        self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#242424", fg_color="#242424")
+        self.menu.grid(row= 1, column= 0, sticky= "ew")
+        
+        self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
+        self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
+        
+        self.addButton = ctk.CTkButton(self.menu, text="Add Password", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3")
+        self.addButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
     
     def test():
         print("test")
