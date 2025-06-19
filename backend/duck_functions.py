@@ -1,6 +1,6 @@
-import duck_dbms as db
+import backend.duck_dbms as db
 import base64 as b64
-import crypting as cy
+import backend.crypting as cy
 import json
 from datetime import date
 

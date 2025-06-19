@@ -131,7 +131,7 @@ class DBMS:
         return "class for interacting with a DB via duckdb"
 """
 dbms = DBMS("backend\\l0ck3rdb.duckdb")
-print(dbms.execute("SELECT * FROM users", True))
+print(dbms.execute("SELECT * FROM users", False))
 
 print(dbms.deleteValues("users", "username = 'user'"))
 print(dbms.execute("SELECT * FROM users", True))"""
