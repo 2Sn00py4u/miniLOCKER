@@ -93,6 +93,8 @@ class PasswortFrame(ctk.CTkFrame):
             new_password = self.password
         #print(new_username, new_password)
         dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)
+        if self.__id == "1":
+            dbf.updateLogin(DBMS, username, new_username, new_password)
         self.username = new_username
         self.password = new_password
         self.text1.configure(text=f"Username: {self.username}")
