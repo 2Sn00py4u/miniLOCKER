@@ -1,8 +1,10 @@
 import customtkinter as ctk
+import tkinter.messagebox as mbox
 import tldextract
 import backend.duck_functions as dbf
 import sys
 import pyperclip as clip
+
 
 
 class PasswortFrame(ctk.CTkFrame):
@@ -95,11 +97,19 @@ class PasswortFrame(ctk.CTkFrame):
         if not new_password:
             new_password = self.password
         #print(new_username, new_password)
-        dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)
         if self.__id == "1":
-            dbf.updateLogin(DBMS, username, new_username, new_password)
-        self.username = new_username
-        self.password = new_password
+            updateLogin = dbf.updateLogin(DBMS, username, new_username, new_password)
+            if updateLogin == True:
+                dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)
+                self.username = new_username
+                self.password = new_password
+            else:
+                dbf.updateLogin(DBMS, username, username, self.password)
+                mbox.showerror("Error", "Username already in use!")
+        else:
+            dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)        
+            self.username = new_username
+            self.password = new_password
         self.text1.configure(text=f"Username: {self.username}")
         self.showPassword(self.getCensor())
     
