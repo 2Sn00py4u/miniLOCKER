@@ -226,7 +226,7 @@ class Login(ctk.CTk):
         self.passInput = ctk.CTkEntry(self.loginForm, placeholder_text="Passwort", width= 200, bg_color="#242424", fg_color="#242424", show="*")
         self.passInput.pack(pady=10, padx=20)
         
-        self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#121212", fg_color="#242424")
+        self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, fg_color="#121212")
         self.menu.grid(row= 1, column= 0, sticky= "ew")
         
         self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
@@ -258,10 +258,10 @@ class Login(ctk.CTk):
                 for i in range(len(userdata["password_cards"])):
                     passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
                 mbox.showinfo("Login", f"Welcome back, {username}!\nlatest access: {userdata["latest_access"]}")
-                self.destroy()
                 ctk.set_appearance_mode("dark")
                 ctk.set_default_color_theme("blue")
                 app = GUI(passwordList)
+                self.destroy()
                 app.mainloop()
                 
             else:
@@ -275,10 +275,10 @@ class Login(ctk.CTk):
                 for i in range(len(userdata["password_cards"])):
                     passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
                 mbox.showinfo("Register", f"Welcome to miniL0CK3R, {username}!")
-                self.destroy()
                 ctk.set_appearance_mode("dark")
                 ctk.set_default_color_theme("blue")
                 app = GUI(passwordList)
+                self.destroy()
                 app.mainloop()
                 
             else:
