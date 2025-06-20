@@ -232,19 +232,21 @@ class Login(ctk.CTk):
         self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
         self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
-        self.loginButton = ctk.CTkButton(self.menu, text="Login", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.addPassword())
+        self.loginButton = ctk.CTkButton(self.menu, text="Login", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.loginUser("login"))
         self.loginButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
-        self.registerButton = ctk.CTkButton(self.menu, text="Register", fg_color="#78dc96", width= 100, corner_radius= 15, hover_color="#2ac33c", command=lambda:self.addPassword())
+        self.registerButton = ctk.CTkButton(self.menu, text="Register", fg_color="#78dc96", width= 100, corner_radius= 15, hover_color="#2ac33c", command=lambda:self.loginUser("register"))
         self.registerButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
     
-    def loginUser(self) -> None:
+    def loginUser(self, action: str) -> None:
         """
         Vor.: --
         Eff.: Login-Funktion wird aufgerufen
         Erg.: Login wird durchgeführt
         """
         global DBMS, username, password
+        DBMS = dbf.connect_L0CKER_DB(r"backend/l0ck3rdb.duckdb")
+        self.action = action
         username = self.userInput.get()
         password = self.passInput.get()
         
@@ -255,9 +257,13 @@ class Login(ctk.CTk):
                 userdata = dbf.readUserdata(DBMS, username)
                 for i in range(len(userdata["password_cards"])):
                     passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-
                 mbox.showinfo("Login", f"Welcome back, {username}!\nlatest access: {userdata["latest_access"]}")
                 self.destroy()
+                ctk.set_appearance_mode("dark")
+                ctk.set_default_color_theme("blue")
+                app = GUI(passwordList)
+                app.mainloop()
+                
             else:
                 mbox.showerror("Login", "Wrong username or password provided!")
         
@@ -265,8 +271,16 @@ class Login(ctk.CTk):
             passwordList = []
             login = dbf.R3gister(DBMS, username, password)
             if login == True:
+                userdata = dbf.readUserdata(DBMS, username)
+                for i in range(len(userdata["password_cards"])):
+                    passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
                 mbox.showinfo("Register", f"Welcome to miniL0CK3R, {username}!")
                 self.destroy()
+                ctk.set_appearance_mode("dark")
+                ctk.set_default_color_theme("blue")
+                app = GUI(passwordList)
+                app.mainloop()
+                
             else:
                 mbox.showerror("Register", "Username already in use!")
 
@@ -380,4 +394,3 @@ def main():
 if __name__ == "__main__":
     login = Login()
     login.mainloop()
-    main()
