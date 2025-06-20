@@ -105,14 +105,34 @@ def setUserdata(DBMS: db.DBMS, username: str, userdata: dict) -> bool:
         print(e)
         return False
 
-def deletePasswordCard(DBMS: db.DBMS, username: str, website) -> bool:
+def deletePasswordCard(DBMS: db.DBMS, username: str, card_id: str) -> bool:
     L0CK3R_DBMS = DBMS
     try:
         userdata = readUserdata(L0CK3R_DBMS, username)
         for i in range(len(userdata["password_cards"])):
-            if userdata["password_cards"][i]["website"] == website:
+            if userdata["password_cards"][i]["card_id"] == card_id:
                 del userdata["password_cards"][i]
+                for a in range(i, len(userdata["password_cards"])):
+                    userdata["password_cards"][a]["card_id"] = str(int(userdata["password_cards"][a]["card_id"]) -1)
                 break
+        setUserdata(L0CK3R_DBMS, username, userdata)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+def addPasswordCard(DBMS: db.DBMS, username: str, website: str, new_username: str, new_password: str) -> bool:
+    L0CK3R_DBMS = DBMS
+    try:
+        userdata = readUserdata(L0CK3R_DBMS, username)
+        userdata["password_cards"].append(
+            {
+                "card_id": len(userdata["password_cards"])+1,
+                "website": website,
+                "email": new_username,
+                "password": new_password
+            }
+        )
         setUserdata(L0CK3R_DBMS, username, userdata)
         return True
     except Exception as e:
@@ -193,6 +213,9 @@ USERDATA["password_cards"].append(
 
 print(setUserdata(DBMS, "admin", USERDATA))
 
+print(readUserdata(DBMS, "admin"),type(readUserdata(DBMS, "admin")))
+
+print(deletePasswordCard(DBMS, "admin", "3"))
 print(readUserdata(DBMS, "admin"),type(readUserdata(DBMS, "admin")))
 
 print(L0CKin(DBMS, "admin", "admin"))

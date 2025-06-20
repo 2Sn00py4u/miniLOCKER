@@ -47,16 +47,16 @@ class PasswortFrame(ctk.CTkFrame):
         self.copyButton.grid(row= 0, column= 1, sticky= "e", padx= 10)
         
         if self.__id != "1":
-            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.deletePassword(), hover_color="#c32a3c")
+            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.deletePassword(), hover_color="#c32a3c")
             self.deleteButton.grid(row= 0, column= 2, sticky= "e", padx= 10)
             
-            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
+            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
             self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
         else:
-            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete Acc", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.deleteUser(), hover_color="#c32a3c")
+            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete Acc", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.deleteUser(), hover_color="#c32a3c")
             self.deleteButton.grid(row= 0, column= 2, sticky= "e", padx= 10)
             
-            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#C5C5C5", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
+            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
             self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
             
         # col1: text
@@ -79,7 +79,7 @@ class PasswortFrame(ctk.CTkFrame):
         clip.copy(self.password)
 
     def deletePassword(self) -> None:
-        dbf.deletePasswordCard(DBMS, username, self.website)
+        dbf.deletePasswordCard(DBMS, username, self.__id)
         liste = []
         userdata = dbf.readUserdata(DBMS, username)
         for i in range(len(userdata["password_cards"])):
@@ -159,9 +159,7 @@ class PasswordScroll(ctk.CTkScrollableFrame):
 
 #hauptklasse
 class GUI(ctk.CTk):
-
     def __init__(self, liste) -> None:
-        
         super().__init__()
         self.geometry("600x500")
         self.title("Password Manager")
@@ -178,11 +176,23 @@ class GUI(ctk.CTk):
         self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
         self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
-        self.addButton = ctk.CTkButton(self.menu, text="Add Password", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3")
+        self.addButton = ctk.CTkButton(self.menu, text="Add Password", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.addPassword())
         self.addButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
-    
-    def test():
-        print("test")
+        
+    def addPassword(self) -> None:
+        add_website = ctk.CTkInputDialog(text="Website", title="Add Password").get_input()
+        add_username = ctk.CTkInputDialog(text="Username", title="Add Password").get_input()
+        add_password = ctk.CTkInputDialog(text="Password", title="Add Password").get_input()
+        
+        if add_website and add_username and add_password:
+            dbf.addPasswordCard(DBMS, username, add_website, add_username, add_password)
+            liste = []
+            userdata = dbf.readUserdata(DBMS, username)
+            for i in range(len(userdata["password_cards"])):
+                liste.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+            self.test_scroll.values = liste
+            self.test_scroll.refresh()
+
 
 def main():
     global DBMS, username
