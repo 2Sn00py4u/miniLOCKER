@@ -198,9 +198,79 @@ class PasswordScroll(ctk.CTkScrollableFrame):
         for self.frame in self.frames:
             if self.frame.getCensor() == 1: 
                 self.frame.configure(uncensor= True)
-            
-            
 
+class Login(ctk.CTk):
+    def __init__(self) -> None:
+        """
+        Vor.: Variablen: passwordList
+        Eff.: Eine Objekt der Klasse GUI wird gespeichert
+        Erg.: Objekt der Klasse GUI als grafische Benutzeroberfläche wird erstellt
+        """
+        super().__init__()
+        self.action = "login"
+        self.geometry("400x300")
+        self.title("Password Manager")
+
+        self.grid_rowconfigure(0, weight = 1)
+        self.grid_columnconfigure(0, weight = 1)
+        
+        self.loginForm = ctk.CTkFrame(self, corner_radius= 10, bg_color="#242424", fg_color="transparent")
+        self.loginForm.grid(row= 0, column= 0, sticky= "news")
+        
+        self.loginLabel = ctk.CTkLabel(self.loginForm, text="Login", font=("Arial", 20), corner_radius= 10, bg_color="#242424", fg_color="#242424")
+        self.loginLabel.pack(pady=20, padx=20)
+        
+        self.userInput = ctk.CTkEntry(self.loginForm, placeholder_text="Benutzername", width= 200, bg_color="#242424", fg_color="#242424")
+        self.userInput.pack(pady=10, padx=20)
+        
+        self.passInput = ctk.CTkEntry(self.loginForm, placeholder_text="Passwort", width= 200, bg_color="#242424", fg_color="#242424", show="*")
+        self.passInput.pack(pady=10, padx=20)
+        
+        self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#121212", fg_color="#242424")
+        self.menu.grid(row= 1, column= 0, sticky= "ew")
+        
+        self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
+        self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
+        
+        self.loginButton = ctk.CTkButton(self.menu, text="Login", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.addPassword())
+        self.loginButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
+        
+        self.registerButton = ctk.CTkButton(self.menu, text="Register", fg_color="#78dc96", width= 100, corner_radius= 15, hover_color="#2ac33c", command=lambda:self.addPassword())
+        self.registerButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
+    
+    def loginUser(self) -> None:
+        """
+        Vor.: --
+        Eff.: Login-Funktion wird aufgerufen
+        Erg.: Login wird durchgeführt
+        """
+        global DBMS, username, password
+        username = self.userInput.get()
+        password = self.passInput.get()
+        
+        if self.action == "login":
+            passwordList = []
+            login = dbf.L0CKin(DBMS, username, password)
+            if login == True:
+                userdata = dbf.readUserdata(DBMS, username)
+                for i in range(len(userdata["password_cards"])):
+                    passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+
+                mbox.showinfo("Login", f"Welcome back, {username}!\nlatest access: {userdata["latest_access"]}")
+                self.destroy()
+            else:
+                mbox.showerror("Login", "Wrong username or password provided!")
+        
+        elif self.action == "register":
+            passwordList = []
+            login = dbf.R3gister(DBMS, username, password)
+            if login == True:
+                mbox.showinfo("Register", f"Welcome to miniL0CK3R, {username}!")
+                self.destroy()
+            else:
+                mbox.showerror("Register", "Username already in use!")
+
+            
 class GUI(ctk.CTk):
     def __init__(self, passwordList: list) -> None:
         """
@@ -308,4 +378,6 @@ def main():
                     print(f"Sorry, username already in use!\n")
 
 if __name__ == "__main__":
+    login = Login()
+    login.mainloop()
     main()
