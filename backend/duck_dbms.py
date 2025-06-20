@@ -110,7 +110,7 @@ class DBMS:
         except Exception as e:
             raise Exception(f"error deleting self:\n{e}")
     
-    def execute(self, command:str, pdOutput: bool= False, *args) -> list:
+    def execute(self, command:str, pdOutput: bool= False, *args) -> list[tuple]|pd.DataFrame:
         if not args:
             result = self.__dbConnection.execute(command).fetchall()
         else:

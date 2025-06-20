@@ -6,9 +6,13 @@ import sys
 import pyperclip as clip
 
 
-
-class PasswortFrame(ctk.CTkFrame):
-    def __init__(self, master, id, website, username, password, uncensor):
+class PasswordFrame(ctk.CTkFrame):
+    def __init__(self, master, id: str, website: str, username: str, password: str, uncensor: bool) -> None:
+        """
+        Vor.: Variablen: master, id, website, username, password, uncensor
+        Eff.: Eine Objekt der Klasse PasswordFrame wird gespeichert
+        Erg.: Objekt der Klasse PasswordFrame mit den Attributen id, website, username, password und uncensor wird erstellt
+        """
         super().__init__(master)
         self.__id = id
         self.website = website
@@ -30,8 +34,6 @@ class PasswortFrame(ctk.CTkFrame):
         self.title = ctk.CTkLabel(self, text = domain.top_domain_under_public_suffix, corner_radius = 10, fg_color = "blue", pady= 10, padx = 10 )
         self.title.grid(row = 0, column = 0, columnspan= 2, sticky = "ew")
 
-        # row1: username
-
         self.text1 = ctk.CTkLabel(self, text = f"Username: {username}", padx=10, fg_color="grey30", pady = 5, anchor = "w")
         self.text1.grid(row = 1, column = 0, columnspan= 2 , sticky = "we")
 
@@ -40,7 +42,6 @@ class PasswortFrame(ctk.CTkFrame):
         
         optFrame.grid_columnconfigure(1, weight=1)
         optFrame.grid_rowconfigure(0, weight=1)
-        #col2: censor checkbox
 
         self.censorbox = ctk.CTkCheckBox(optFrame, fg_color= "blue", text= "show", border_color= "blue", text_color= "grey60", corner_radius= 15, command=lambda:self.showPassword(self.getCensor()))
         self.censorbox.grid(row= 0, column= 0, sticky= "e", padx= 10)
@@ -61,14 +62,23 @@ class PasswortFrame(ctk.CTkFrame):
             self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
             self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
             
-        # col1: text
         self.text2 = ctk.CTkLabel(self, text = f"Password: {password_text}", padx= 10, fg_color="grey30", pady = 5, anchor= "w")
         self.text2.grid(row = 2, column = 0, sticky= "we", columnspan= 1)
 
-    def getCensor(self) -> bool: 
+    def getCensor(self) -> bool:
+        """
+        Vor.: --
+        Eff.: --
+        Erg.: Gibt den Zustand der 'Censorbox' zurück
+        """
         return self.censorbox.get()
 
     def showPassword(self, censorState: bool) -> None:
+        """
+        Vor.: Den Status der 'Censorbox'
+        Eff.: Ändern der Variable 'password_text'
+        Erg.: Änderung des Anzeigestatus des Passwortes
+        """
         if censorState == False:
             password_text = "*" * len(self.password)
         else:
@@ -78,25 +88,40 @@ class PasswortFrame(ctk.CTkFrame):
         self.text2.grid(row = 2, column = 0, sticky= "we", columnspan= 1)
     
     def copyPassword(self) -> None:
+        """
+        Vor.: --
+        Eff.: Clipboard-Data wird beschrieben
+        Erg.: CLipboard enthält das Passwort
+        """
         clip.copy(self.password)
 
     def deletePassword(self) -> None:
+        """
+        Vor.: --
+        Eff.: Ein Passwortobjekt wird in der Datenbank gelöscht beim Benutzer: 'username'
+        Erg.: Passwortkarte wird gelöscht
+        """
         dbf.deletePasswordCard(DBMS, username, self.__id)
-        liste = []
+        passwordList = []
         userdata = dbf.readUserdata(DBMS, username)
         for i in range(len(userdata["password_cards"])):
-            liste.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-        self.master.values = liste
+            passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+        self.master.values = passwordList
         self.master.refresh()
         
     def editPassword(self) -> None:
+        """
+        Vor.: --
+        Eff.: Die Werte des Passwortkartenobjektes werden in der Datenbank gespeichert
+        Erg.: Passwortkarte wird geändert
+        """
         new_username = ctk.CTkInputDialog(text="Edit Username", title="Edit Username?").get_input()
         new_password = ctk.CTkInputDialog(text="Edit Password", title="Edit Password?").get_input()
         if not new_username:
             new_username = self.username
         if not new_password:
             new_password = self.password
-        #print(new_username, new_password)
+
         if self.__id == "1":
             updateLogin = dbf.updateLogin(DBMS, username, new_username, new_password)
             if updateLogin == True:
@@ -114,15 +139,23 @@ class PasswortFrame(ctk.CTkFrame):
         self.showPassword(self.getCensor())
     
     def deleteUser(self) -> None:
+        """
+        Vor.: --
+        Eff.: Das Datentupel des Benutzers 'username' wird aus der Datenbannktabelle 'users' gelöscht
+        Erg.: Der Account wird gelöscht
+        """
         new_password = ctk.CTkInputDialog(text="Type 'Delete my LOCKER'", title="Do you realy want to delete your Account?").get_input()
         if new_password == "Delete my LOCKER":
             dbf.deleteUser(DBMS, username)
             sys.exit()    
 
 class PasswordScroll(ctk.CTkScrollableFrame):
-    def __init__(self, master, values):
-        
-        # values = [(card_id, website, username, password), (...) ...]
+    def __init__(self, master, values: list[tuple]):
+        """
+        Vor.: Variablen: master, values
+        Eff.: Eine Objekt der Klasse PasswordScroll wird gespeichert
+        Erg.: Objekt der Klasse PasswordFrame mit den Attributen values und frames wird erstellt
+        """  
         super().__init__(master)
 
         self.values = values
@@ -131,33 +164,34 @@ class PasswordScroll(ctk.CTkScrollableFrame):
         self.grid_columnconfigure(0, weight= 1)
         self.grid_rowconfigure(len(self.values), weight = 1)
 
-
         for i, element in enumerate(self.values):
-            
             card_id = element[0] 
             website = element[1]
             username = element[2]
             password = element[3]
-
             uncensor = False
-
-            self.frame = PasswortFrame(self, card_id, website, username, password, uncensor)
+            
+            self.frame = PasswordFrame(self, card_id, website, username, password, uncensor)
             self.frame.grid(row = i, column= 0, sticky = "we")
-
             self.frames.append(self.frame)
 
     def refresh(self):
+        """
+        Vor.: --
+        Eff.: Datenbankobjekte werden ausgelesen
+        Erg.: Das 'PasswordScroll' wird mit den ausgelesenen Daten erneuert
+        """
         for widget in self.winfo_children():
             widget.destroy()
+            
         for i, element in enumerate(self.values):
             card_id = element[0] 
             website = element[1]
             username = element[2]
             password = element[3]
-
             uncensor = False
 
-            self.frame = PasswortFrame(self, card_id, website, username, password, uncensor)
+            self.frame = PasswordFrame(self, card_id, website, username, password, uncensor)
             self.frame.grid(row = i, column= 0, sticky = "we")
 
             self.frames.append(self.frame)
@@ -167,9 +201,13 @@ class PasswordScroll(ctk.CTkScrollableFrame):
             
             
 
-#hauptklasse
 class GUI(ctk.CTk):
-    def __init__(self, liste) -> None:
+    def __init__(self, passwordList: list) -> None:
+        """
+        Vor.: Variablen: passwordList
+        Eff.: Eine Objekt der Klasse GUI wird gespeichert
+        Erg.: Objekt der Klasse GUI als grafische Benutzeroberfläche wird erstellt
+        """
         super().__init__()
         self.geometry("600x500")
         self.title("Password Manager")
@@ -177,8 +215,8 @@ class GUI(ctk.CTk):
         self.grid_rowconfigure(0, weight = 1)
         self.grid_columnconfigure(0, weight = 1)
         
-        self.test_scroll = PasswordScroll(self, liste)
-        self.test_scroll.grid(row= 0, column= 0, sticky= "news")
+        self.password_scroll = PasswordScroll(self, passwordList)
+        self.password_scroll.grid(row= 0, column= 0, sticky= "news")
         
         self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#242424", fg_color="#242424")
         self.menu.grid(row= 1, column= 0, sticky= "ew")
@@ -190,31 +228,41 @@ class GUI(ctk.CTk):
         self.addButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
     def addPassword(self) -> None:
+        """
+        Vor.: --
+        Eff.: Fügt ein Passwortobjekt in der Datenbank unter dem Benutzer hinzu
+        Erg.: Ein weiteres Passwort
+        """
         add_website = ctk.CTkInputDialog(text="Website", title="Add Password").get_input()
         add_username = ctk.CTkInputDialog(text="Username", title="Add Password").get_input()
         add_password = ctk.CTkInputDialog(text="Password", title="Add Password").get_input()
         
         if add_website and add_username and add_password:
             dbf.addPasswordCard(DBMS, username, add_website, add_username, add_password)
-            liste = []
+            passwordList = []
             userdata = dbf.readUserdata(DBMS, username)
             for i in range(len(userdata["password_cards"])):
-                liste.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-            self.test_scroll.values = liste
-            self.test_scroll.refresh()
+                passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+            self.password_scroll.values = passwordList
+            self.password_scroll.refresh()
 
 
 def main():
+    """
+    Vor.: --
+    Eff.: Diese Funktion wird beim Aufrufen dieser Datei ausgeführt
+    Erg.: Das Hauptprogram
+    """
     global DBMS, username
     running = True
     login = False
-    liste = []
+    passwordList = []
     wrongCount = 1
     username = ""
     password = ""
     DBMS = dbf.connect_L0CKER_DB(r"backend/l0ck3rdb.duckdb")
     print("Bulding miniL0CK3R...")
-    print("Welcome to miniL0CK3R")
+    print("Welcome to miniL0CK3R!\n")
     action = input("Choose an action ( login | register | exit ):\n")
     if action == "exit" or action not in ["login", "register"]:
         sys.exit()
@@ -222,23 +270,22 @@ def main():
         if login:
             ctk.set_appearance_mode("dark")
             ctk.set_default_color_theme("blue")
-            app = GUI(liste)
+            app = GUI(passwordList)
             app.mainloop()
             running = False
 
-        
         else:
             if action == "login":
                 print("Login\n")
-                username = input("Benutzername: ")
-                password = input("Passwort: ")
+                username = input("Username: ")
+                password = input("Password: ")
                 login = dbf.L0CKin(DBMS, username, password)
                 if login == True:
                     print(f"Welcome back, {username}!")
                     userdata = dbf.readUserdata(DBMS, username)
                     print(f"latest access: {userdata["latest_access"]}")
                     for i in range(len(userdata["password_cards"])):
-                        liste.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+                        passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
                 else:
                     print(f"Wrong username or password provided!\nTry again ({3-wrongCount} remaining)")
                     wrongCount += 1
@@ -248,14 +295,14 @@ def main():
                             
             elif action == "register":
                 print("Register\n")
-                username = input("Benutzername: ")
-                password = input("Passwort: ")
+                username = input("Username: ")
+                password = input("Password: ")
                 login = dbf.R3gister(DBMS, username, password)
                 if login == True:
                     print(f"Welcome back, {username}!")
                     userdata = dbf.readUserdata(DBMS, username)
                     for i in range(len(userdata["password_cards"])):
-                        liste.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+                        passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
                     print(f"latest access: {userdata["latest_access"]}")
                 else:
                     print(f"Sorry, username already in use!\n")
