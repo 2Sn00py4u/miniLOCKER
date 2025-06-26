@@ -3,7 +3,12 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
 # /// classes
-def encrypting(password: str, key: str) -> bytes:           
+def encrypting(password: str, key: str) -> bytes:
+    """
+    Vor.: Verschlüsselungsschlüssel und Passwort sind bekannt
+    Eff.: Das 'gepaddete' Passwort wird mit Hilfe des AES-Algorithmus und des Schlüssels verschlüsselt
+    Erg.: Verschlüsseltes Passwort wird als Byte-Objekt zurückgegeben
+    """         
     # /// varibles ///
     byte_password = bytes(password, "utf-8")
     byte_key = bytes(key, "utf-8")
@@ -28,6 +33,11 @@ def encrypting(password: str, key: str) -> bytes:
   
         
 def decrypting(encrypted_bytes:bytes, key:str) -> str:
+    """
+    Vor.: Verschlüsselungsschlüssel und verschlüsseltes Passwort sind bekannt
+    Eff.: Die verschlüsselten Bytes werden mit Hilfe des AES-Algorithmus und des Schlüssels entschlüsselt
+    Erg.: Entschlüsseltes Passwort wird als String-Objekt zurückgegeben
+    """
     # /// varibles ///
     byte_key = bytes(key, "utf-8")
     encryption_key = pad(byte_key, AES.block_size)
@@ -59,7 +69,9 @@ def compare_encrypted(password_guess: str, key_guess: str, encrypted_password: b
         
     except:
         return "couldn't encrypt password"
-"""
+
+
+""" --- Test ---
 print(hash:=encrypting("admin", "admin"))
 print(decrypting(hash, "admin"))
 print(compare_encrypted("admin", "admin", hash))"""

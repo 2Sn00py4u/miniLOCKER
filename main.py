@@ -2,7 +2,7 @@ import customtkinter as ctk
 import tkinter.messagebox as mbox
 import tldextract
 import backend.duck_functions as dbf
-import sys
+import sys, os
 import pyperclip as clip
 
 
@@ -34,7 +34,7 @@ class PasswordFrame(ctk.CTkFrame):
         self.title = ctk.CTkLabel(self, text = domain.top_domain_under_public_suffix, corner_radius = 10, fg_color = "blue", pady= 10, padx = 10 )
         self.title.grid(row = 0, column = 0, columnspan= 2, sticky = "ew")
 
-        self.text1 = ctk.CTkLabel(self, text = f"Username: {username}", padx=10, fg_color="grey30", pady = 5, anchor = "w")
+        self.text1 = ctk.CTkLabel(self, text = f"Benutzername: {username}", padx=10, fg_color="grey30", pady = 5, anchor = "w")
         self.text1.grid(row = 1, column = 0, columnspan= 2 , sticky = "we")
 
         optFrame = ctk.CTkFrame(self, width=200, corner_radius=10, bg_color="grey20")
@@ -43,26 +43,26 @@ class PasswordFrame(ctk.CTkFrame):
         optFrame.grid_columnconfigure(1, weight=1)
         optFrame.grid_rowconfigure(0, weight=1)
 
-        self.censorbox = ctk.CTkCheckBox(optFrame, fg_color= "blue", text= "show", border_color= "blue", text_color= "grey60", corner_radius= 15, command=lambda:self.showPassword(self.getCensor()))
+        self.censorbox = ctk.CTkCheckBox(optFrame, fg_color= "blue", text= "👁️", border_color= "blue", text_color= "grey60", corner_radius= 15, command=lambda:self.showPassword(self.getCensor()))
         self.censorbox.grid(row= 0, column= 0, sticky= "e", padx= 10)
         
-        self.copyButton = ctk.CTkButton(optFrame, fg_color= "#ade298", width=30, text= "copy", text_color= "#242424", corner_radius= 15, command=lambda:self.copyPassword(), hover_color="#63984e")
+        self.copyButton = ctk.CTkButton(optFrame, fg_color= "#ade298", width=30, text= "📄", text_color= "#242424", corner_radius= 15, command=lambda:self.copyPassword(), hover_color="#63984e")
         self.copyButton.grid(row= 0, column= 1, sticky= "e", padx= 10)
         
         if self.__id != "1":
-            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.deletePassword(), hover_color="#c32a3c")
+            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "❌", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.deletePassword(), hover_color="#c32a3c")
             self.deleteButton.grid(row= 0, column= 2, sticky= "e", padx= 10)
             
-            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
+            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "🖊️ edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
             self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
         else:
-            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "delete Acc", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.deleteUser(), hover_color="#c32a3c")
+            self.deleteButton = ctk.CTkButton(optFrame, fg_color= "#f0738c", width=30, text= "❌", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.deleteUser(), hover_color="#c32a3c")
             self.deleteButton.grid(row= 0, column= 2, sticky= "e", padx= 10)
             
-            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
+            self.editButton = ctk.CTkButton(optFrame, fg_color= "#7978dc", width=30, text= "🖊️ edit", text_color= "#E2E2E2", corner_radius= 15, command=lambda:self.editPassword(), hover_color="#2a2fc3")
             self.editButton.grid(row= 0, column= 3, sticky= "e", padx= 10)
             
-        self.text2 = ctk.CTkLabel(self, text = f"Password: {password_text}", padx= 10, fg_color="grey30", pady = 5, anchor= "w")
+        self.text2 = ctk.CTkLabel(self, text = f"Passwort: {password_text}", padx= 10, fg_color="grey30", pady = 5, anchor= "w")
         self.text2.grid(row = 2, column = 0, sticky= "we", columnspan= 1)
 
     def getCensor(self) -> bool:
@@ -84,7 +84,7 @@ class PasswordFrame(ctk.CTkFrame):
         else:
             password_text = self.password
         
-        self.text2 = ctk.CTkLabel(self, text = f"Password: {password_text}", padx= 10, fg_color="grey30", pady = 5, anchor= "w")
+        self.text2 = ctk.CTkLabel(self, text = f"Passwort: {password_text}", padx= 10, fg_color="grey30", pady = 5, anchor= "w")
         self.text2.grid(row = 2, column = 0, sticky= "we", columnspan= 1)
     
     def copyPassword(self) -> None:
@@ -115,8 +115,8 @@ class PasswordFrame(ctk.CTkFrame):
         Eff.: Die Werte des Passwortkartenobjektes werden in der Datenbank gespeichert
         Erg.: Passwortkarte wird geändert
         """
-        new_username = ctk.CTkInputDialog(text="Edit Username", title="Edit Username?").get_input()
-        new_password = ctk.CTkInputDialog(text="Edit Password", title="Edit Password?").get_input()
+        new_username = ctk.CTkInputDialog(text="Benutzername editieren", title="Bentzername?").get_input()
+        new_password = ctk.CTkInputDialog(text="Password editieren", title="Passwort?").get_input()
         if not new_username:
             new_username = self.username
         if not new_password:
@@ -128,14 +128,15 @@ class PasswordFrame(ctk.CTkFrame):
                 dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)
                 self.username = new_username
                 self.password = new_password
+                os.execv(sys.executable, ['python'] + sys.argv)
             else:
                 dbf.updateLogin(DBMS, username, username, self.password)
-                mbox.showerror("Error", "Username already in use!")
+                mbox.showerror("Error", "Benutzername bereits in Verwendung!")
         else:
             dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)        
             self.username = new_username
             self.password = new_password
-        self.text1.configure(text=f"Username: {self.username}")
+        self.text1.configure(text=f"Benutzername: {self.username}")
         self.showPassword(self.getCensor())
     
     def deleteUser(self) -> None:
@@ -144,8 +145,8 @@ class PasswordFrame(ctk.CTkFrame):
         Eff.: Das Datentupel des Benutzers 'username' wird aus der Datenbannktabelle 'users' gelöscht
         Erg.: Der Account wird gelöscht
         """
-        new_password = ctk.CTkInputDialog(text="Type 'Delete my LOCKER'", title="Do you realy want to delete your Account?").get_input()
-        if new_password == "Delete my LOCKER":
+        new_password = ctk.CTkInputDialog(text="Tippe 'Lösche meinen LOCKER'", title="Möchten Sie wirklich Ihren Account löschen?").get_input()
+        if new_password == "Lösche meinen LOCKER":
             dbf.deleteUser(DBMS, username)
             sys.exit()    
 
@@ -209,7 +210,7 @@ class Login(ctk.CTk):
         super().__init__()
         self.action = "login"
         self.geometry("400x300")
-        self.title("Password Manager")
+        self.title("miniL0CK3R")
 
         self.grid_rowconfigure(0, weight = 1)
         self.grid_columnconfigure(0, weight = 1)
@@ -226,16 +227,16 @@ class Login(ctk.CTk):
         self.passInput = ctk.CTkEntry(self.loginForm, placeholder_text="Passwort", width= 200, bg_color="#242424", fg_color="#242424", show="*")
         self.passInput.pack(pady=10, padx=20)
         
-        self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, fg_color="#121212")
+        self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#121212", fg_color="#121212")
         self.menu.grid(row= 1, column= 0, sticky= "ew")
         
-        self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
+        self.leaveButton = ctk.CTkButton(self.menu, text="Beenden", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
         self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
         self.loginButton = ctk.CTkButton(self.menu, text="Login", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.loginUser("login"))
         self.loginButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
-        self.registerButton = ctk.CTkButton(self.menu, text="Register", fg_color="#78dc96", width= 100, corner_radius= 15, hover_color="#2ac33c", command=lambda:self.loginUser("register"))
+        self.registerButton = ctk.CTkButton(self.menu, text="Registrieren", fg_color="#78dc96", width= 100, corner_radius= 15, hover_color="#2ac33c", command=lambda:self.loginUser("register"))
         self.registerButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
     
     def loginUser(self, action: str) -> None:
@@ -257,15 +258,15 @@ class Login(ctk.CTk):
                 userdata = dbf.readUserdata(DBMS, username)
                 for i in range(len(userdata["password_cards"])):
                     passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-                mbox.showinfo("Login", f"Welcome back, {username}!\nlatest access: {userdata["latest_access"]}")
+                mbox.showinfo("Login", f"Willkommen zurück, {username}!\nLetzter Zugriff: {userdata["latest_access"]}")
+                self.destroy()
                 ctk.set_appearance_mode("dark")
                 ctk.set_default_color_theme("blue")
                 app = GUI(passwordList)
-                self.destroy()
                 app.mainloop()
                 
             else:
-                mbox.showerror("Login", "Wrong username or password provided!")
+                mbox.showerror("Login", "Benutzername oder Passwort ist falsch!")
         
         elif self.action == "register":
             passwordList = []
@@ -274,15 +275,15 @@ class Login(ctk.CTk):
                 userdata = dbf.readUserdata(DBMS, username)
                 for i in range(len(userdata["password_cards"])):
                     passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-                mbox.showinfo("Register", f"Welcome to miniL0CK3R, {username}!")
+                mbox.showinfo("Register", f"Willkommen bei miniL0CK3R, {username}!")
+                self.destroy()
                 ctk.set_appearance_mode("dark")
                 ctk.set_default_color_theme("blue")
                 app = GUI(passwordList)
-                self.destroy()
                 app.mainloop()
                 
             else:
-                mbox.showerror("Register", "Username already in use!")
+                mbox.showerror("Register", "Benutzername ist bereits vergeben!")
 
             
 class GUI(ctk.CTk):
@@ -294,7 +295,7 @@ class GUI(ctk.CTk):
         """
         super().__init__()
         self.geometry("600x500")
-        self.title("Password Manager")
+        self.title("miniL0CK3R")
 
         self.grid_rowconfigure(0, weight = 1)
         self.grid_columnconfigure(0, weight = 1)
@@ -305,10 +306,10 @@ class GUI(ctk.CTk):
         self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#242424", fg_color="#242424")
         self.menu.grid(row= 1, column= 0, sticky= "ew")
         
-        self.leaveButton = ctk.CTkButton(self.menu, text="Leave", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
+        self.leaveButton = ctk.CTkButton(self.menu, text="Beenden", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:os.execv(sys.executable, ['python'] + sys.argv))
         self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
-        self.addButton = ctk.CTkButton(self.menu, text="Add Password", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.addPassword())
+        self.addButton = ctk.CTkButton(self.menu, text="Hinzufügen", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.addPassword())
         self.addButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
     def addPassword(self) -> None:
@@ -317,9 +318,9 @@ class GUI(ctk.CTk):
         Eff.: Fügt ein Passwortobjekt in der Datenbank unter dem Benutzer hinzu
         Erg.: Ein weiteres Passwort
         """
-        add_website = ctk.CTkInputDialog(text="Website", title="Add Password").get_input()
-        add_username = ctk.CTkInputDialog(text="Username", title="Add Password").get_input()
-        add_password = ctk.CTkInputDialog(text="Password", title="Add Password").get_input()
+        add_website = ctk.CTkInputDialog(text="Webseite", title="Add Password").get_input()
+        add_username = ctk.CTkInputDialog(text="Benutzername", title="Add Password").get_input()
+        add_password = ctk.CTkInputDialog(text="Passwort", title="Add Password").get_input()
         
         if add_website and add_username and add_password:
             dbf.addPasswordCard(DBMS, username, add_website, add_username, add_password)
@@ -330,66 +331,6 @@ class GUI(ctk.CTk):
             self.password_scroll.values = passwordList
             self.password_scroll.refresh()
 
-
-def main():
-    """
-    Vor.: --
-    Eff.: Diese Funktion wird beim Aufrufen dieser Datei ausgeführt
-    Erg.: Das Hauptprogram
-    """
-    global DBMS, username
-    running = True
-    login = False
-    passwordList = []
-    wrongCount = 1
-    username = ""
-    password = ""
-    DBMS = dbf.connect_L0CKER_DB(r"backend/l0ck3rdb.duckdb")
-    print("Bulding miniL0CK3R...")
-    print("Welcome to miniL0CK3R!\n")
-    action = input("Choose an action ( login | register | exit ):\n")
-    if action == "exit" or action not in ["login", "register"]:
-        sys.exit()
-    while running: 
-        if login:
-            ctk.set_appearance_mode("dark")
-            ctk.set_default_color_theme("blue")
-            app = GUI(passwordList)
-            app.mainloop()
-            running = False
-
-        else:
-            if action == "login":
-                print("Login\n")
-                username = input("Username: ")
-                password = input("Password: ")
-                login = dbf.L0CKin(DBMS, username, password)
-                if login == True:
-                    print(f"Welcome back, {username}!")
-                    userdata = dbf.readUserdata(DBMS, username)
-                    print(f"latest access: {userdata["latest_access"]}")
-                    for i in range(len(userdata["password_cards"])):
-                        passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-                else:
-                    print(f"Wrong username or password provided!\nTry again ({3-wrongCount} remaining)")
-                    wrongCount += 1
-                    if wrongCount > 3:
-                        print("Danger!!\nClosing DB")
-                        sys.exit()
-                            
-            elif action == "register":
-                print("Register\n")
-                username = input("Username: ")
-                password = input("Password: ")
-                login = dbf.R3gister(DBMS, username, password)
-                if login == True:
-                    print(f"Welcome back, {username}!")
-                    userdata = dbf.readUserdata(DBMS, username)
-                    for i in range(len(userdata["password_cards"])):
-                        passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-                    print(f"latest access: {userdata["latest_access"]}")
-                else:
-                    print(f"Sorry, username already in use!\n")
 
 if __name__ == "__main__":
     login = Login()

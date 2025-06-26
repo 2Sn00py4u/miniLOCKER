@@ -23,9 +23,20 @@ USERDATA = {
 }
 
 def connect_L0CKER_DB(filePath: str) -> db.DBMS:
+    """
+    Vor.: --
+    Eff.: --
+    Erg.: Verbindung zur DB wird aufgebaut und zurückgegeben
+    """
     return db.DBMS(filePath)
 
 def build_L0CK3R_DB(filePath: str) -> db.DBMS:
+    # Funktion primär zum neu-aufsetzen der Datenbank mit Testwerten (debuggen)
+    """
+    Vor.: --
+    Eff.: Zum entsprechenden Dateipfad wird eine neue Datenbank-Datei erstellt
+    Erg.: Datenbank mit Testwerten
+    """
     L0CK3R_DBMS = db.DBMS(filePath)
     tables = L0CK3R_DBMS.getTables()
     for table in tables:
@@ -40,6 +51,11 @@ def build_L0CK3R_DB(filePath: str) -> db.DBMS:
     return L0CK3R_DBMS
 
 def L0CKin(DBMS: db.DBMS, username: str, password: str) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername und Passwort sind bekannt
+    Eff.: Simple Datenbankabfrage, ob der Benutzername und das Passwort korrekt sind
+    Erg.: Login-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     l0ck3din = False
     result = L0CK3R_DBMS.execute(f"""SELECT * FROM users WHERE username = '{username}'""")
@@ -50,6 +66,11 @@ def L0CKin(DBMS: db.DBMS, username: str, password: str) -> bool:
     
     
 def R3gister(DBMS: db.DBMS, username: str, password: str) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername und Passwort sind bekannt
+    Eff.: Simple Datenbankabfrage, ob der Benutzername und das Passwort korrekt bzw. unbenutzt sind
+    Erg.: Registrier-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         L0CK3R_DBMS.insertValues("users",[(username, cy.encrypting(password, password), str(date.today()), {})])
@@ -69,6 +90,11 @@ def R3gister(DBMS: db.DBMS, username: str, password: str) -> bool:
     return r3gistert
 
 def updateLogin(DBMS: db.DBMS, username: str, new_username: str, password: str) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername, neuer Benutzername und neues Passwort sind bekannt
+    Eff.: Die verschlüsselten Login-Daten des Benutzers werden aktualisiert
+    Erg.: Update-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         L0CK3R_DBMS.execute(f"""UPDATE users SET password = ? WHERE username = ?""", False, cy.encrypting(password, password), username)
@@ -78,6 +104,11 @@ def updateLogin(DBMS: db.DBMS, username: str, new_username: str, password: str) 
         return False
 
 def readUserdata(DBMS: db.DBMS, username: str, pdOutput: bool = False) -> dict:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername ist bekannt
+    Eff.: Simple Datenbankabfrage von den verschlüsselten Benutzerdaten und Passwörtern
+    Erg.: Benutzerdaten in entschlüsselter Form werden zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         user_data = L0CK3R_DBMS.execute(f"""SELECT userdata FROM users WHERE username = '{username}'""", pdOutput)
@@ -95,6 +126,11 @@ def readUserdata(DBMS: db.DBMS, username: str, pdOutput: bool = False) -> dict:
     return fetched_user
 
 def setUserdata(DBMS: db.DBMS, username: str, userdata: dict) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername und neue Benutzerdaten sind bekannt
+    Eff.: Benutzerdaten werden verschlüsselt in der Datenbank unter 'username' neu gesetzt
+    Erg.: Update-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         for i in range(len(userdata["password_cards"])):
@@ -106,6 +142,11 @@ def setUserdata(DBMS: db.DBMS, username: str, userdata: dict) -> bool:
         return False
 
 def deletePasswordCard(DBMS: db.DBMS, username: str, card_id: str) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername und Passwort-Karte sind bekannt
+    Eff.: Assozierte Passwort-Karte wird aus der Benutzerdatenbank gelöscht
+    Erg.: Lösch-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         userdata = readUserdata(L0CK3R_DBMS, username)
@@ -122,6 +163,11 @@ def deletePasswordCard(DBMS: db.DBMS, username: str, card_id: str) -> bool:
         return False
 
 def addPasswordCard(DBMS: db.DBMS, username: str, website: str, new_username: str, new_password: str) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername, Webseite, neuer Benutzername, neues Passwort sind bekannt
+    Eff.: Eine neue Passwort-Karte wird verschlüsselt und in den Beunutzerdaten des Benutzers in der Benutzerdatenbank gespeichert
+    Erg.: Hinzufüge-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         userdata = readUserdata(L0CK3R_DBMS, username)
@@ -140,6 +186,11 @@ def addPasswordCard(DBMS: db.DBMS, username: str, website: str, new_username: st
         return False
     
 def editPasswordCard(DBMS: db.DBMS, username: str, card_id: str, new_username: str, new_password: str) -> bool:
+    """
+    Vor.: Verbindung zur Datenbank, Benutzername, Passwort-Karte, neuer Benutzername, neues Passwort sind bekannt
+    Eff.: Eine Passwort-Karte wird in den Beunutzerdaten aktuallisiert und verschlüsselt in der Benutzerdatenbank gespeichert
+    Erg.: Editier-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         userdata = readUserdata(L0CK3R_DBMS, username)
@@ -155,6 +206,11 @@ def editPasswordCard(DBMS: db.DBMS, username: str, card_id: str, new_username: s
         return False
 
 def deleteUser(DBMS: db.DBMS, username: str):
+    """
+    Vor.: Verbindung zur Datenbank und Benutzername sind bekannt
+    Eff.: Der Eintrag eines Benutzer in der Benutzerdatenbank wird gelöscht
+    Erg.: Lösch-Status wird zurückgegeben
+    """
     L0CK3R_DBMS = DBMS
     try:
         DBMS.deleteValues("users", f"username = '{username}'")
@@ -163,9 +219,14 @@ def deleteUser(DBMS: db.DBMS, username: str):
         return False
 
 def closeConnection(DBMS: db.DBMS) -> None:
+    """
+    Vor.: --
+    Eff.: --
+    Erg.: Verbindung zur DB wird geschlossen
+    """
     DBMS.disconnectDB()
     
-"""
+""" --- Test ---
 DMBS = db.DBMS("backend\\l0ck3rdb.duckdb")
 print(deleteUser(DMBS, "user"))"""
 #DBMS = build_L0CK3R_DB("backend\\l0ck3rdb.duckdb")
