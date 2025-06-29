@@ -117,6 +117,7 @@ class PasswordFrame(ctk.CTkFrame):
         """
         new_username = ctk.CTkInputDialog(text="Benutzername editieren", title="Bentzername?").get_input()
         new_password = ctk.CTkInputDialog(text="Password editieren", title="Passwort?").get_input()
+
         if not new_username:
             new_username = self.username
         if not new_password:
@@ -126,17 +127,21 @@ class PasswordFrame(ctk.CTkFrame):
             pass
         
         elif self.__id == "1":
-            updateLogin = dbf.updateLogin(DBMS, username, new_username, new_password)
-            if updateLogin == True:
-                dbf.editPasswordCard(DBMS, new_username, self.__id, new_username, new_password)
-                self.username = new_username
-                self.password = new_password
-                self.text1.configure(text=f"Benutzername: {self.username}")
-                self.showPassword(self.getCensor())
-                os.execv(sys.executable, ['python'] + sys.argv)
+            if len(new_username) > 3 and len(new_password) > 3:
+                updateLogin = dbf.updateLogin(DBMS, username, new_username, new_password)
+                if updateLogin == True:
+                    dbf.editPasswordCard(DBMS, new_username, self.__id, new_username, new_password)
+                    self.username = new_username
+                    self.password = new_password
+                    self.text1.configure(text=f"Benutzername: {self.username}")
+                    self.showPassword(self.getCensor())
+                    os.execv(sys.executable, ['python'] + sys.argv)
+                else:
+                    dbf.updateLogin(DBMS, username, username, self.password)
+                    mbox.showerror("Error", "Benutzername bereits in Verwendung!")
             else:
-                dbf.updateLogin(DBMS, username, username, self.password)
-                mbox.showerror("Error", "Benutzername bereits in Verwendung!")
+                mbox.showerror("Login", "Benutzername und Passwort müssen mindestens 4 Zeichen haben!")
+
         else:
             dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)        
             self.username = new_username

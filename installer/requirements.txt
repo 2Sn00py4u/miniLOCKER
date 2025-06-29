@@ -1,6 +1,0 @@
-duckdb
-customtkinter
-tldextract
-pyperclip
-pandas
-pycryptodome
