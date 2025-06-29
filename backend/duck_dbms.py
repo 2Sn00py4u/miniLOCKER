@@ -183,11 +183,3 @@ class DBMS:
     """  Magische Methoden  """
     def __str__(self) -> str:
         return "class for interacting with a DB via duckdb"
-
-
-"""  --- Test ---
-dbms = DBMS("backend\\l0ck3rdb.duckdb")
-print(dbms.execute("SELECT * FROM users", True))
-
-print(dbms.deleteValues("users", "username = 'user'"))
-print(dbms.execute("SELECT * FROM users", True))"""

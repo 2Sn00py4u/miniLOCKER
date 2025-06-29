@@ -122,12 +122,17 @@ class PasswordFrame(ctk.CTkFrame):
         if not new_password:
             new_password = self.password
 
-        if self.__id == "1":
+        if new_username == self.username and new_password == self.password:
+            pass
+        
+        elif self.__id == "1":
             updateLogin = dbf.updateLogin(DBMS, username, new_username, new_password)
             if updateLogin == True:
-                dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)
+                dbf.editPasswordCard(DBMS, new_username, self.__id, new_username, new_password)
                 self.username = new_username
                 self.password = new_password
+                self.text1.configure(text=f"Benutzername: {self.username}")
+                self.showPassword(self.getCensor())
                 os.execv(sys.executable, ['python'] + sys.argv)
             else:
                 dbf.updateLogin(DBMS, username, username, self.password)
@@ -136,8 +141,8 @@ class PasswordFrame(ctk.CTkFrame):
             dbf.editPasswordCard(DBMS, username, self.__id, new_username, new_password)        
             self.username = new_username
             self.password = new_password
-        self.text1.configure(text=f"Benutzername: {self.username}")
-        self.showPassword(self.getCensor())
+            self.text1.configure(text=f"Benutzername: {self.username}")
+            self.showPassword(self.getCensor())
     
     def deleteUser(self) -> None:
         """
@@ -233,7 +238,7 @@ class Login(ctk.CTk):
         self.leaveButton = ctk.CTkButton(self.menu, text="Beenden", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:sys.exit())
         self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
-        self.loginButton = ctk.CTkButton(self.menu, text="Login", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.loginUser("login"))
+        self.loginButton = ctk.CTkButton(self.menu, text="Anmelden", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.loginUser("login"))
         self.loginButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
         self.registerButton = ctk.CTkButton(self.menu, text="Registrieren", fg_color="#78dc96", width= 100, corner_radius= 15, hover_color="#2ac33c", command=lambda:self.loginUser("register"))
@@ -250,40 +255,42 @@ class Login(ctk.CTk):
         self.action = action
         username = self.userInput.get()
         password = self.passInput.get()
-        
-        if self.action == "login":
-            passwordList = []
-            login = dbf.L0CKin(DBMS, username, password)
-            if login == True:
-                userdata = dbf.readUserdata(DBMS, username)
-                for i in range(len(userdata["password_cards"])):
-                    passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-                mbox.showinfo("Login", f"Willkommen zurück, {username}!\nLetzter Zugriff: {userdata["latest_access"]}")
-                self.destroy()
-                ctk.set_appearance_mode("dark")
-                ctk.set_default_color_theme("blue")
-                app = GUI(passwordList)
-                app.mainloop()
-                
-            else:
-                mbox.showerror("Login", "Benutzername oder Passwort ist falsch!")
-        
-        elif self.action == "register":
-            passwordList = []
-            login = dbf.R3gister(DBMS, username, password)
-            if login == True:
-                userdata = dbf.readUserdata(DBMS, username)
-                for i in range(len(userdata["password_cards"])):
-                    passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
-                mbox.showinfo("Register", f"Willkommen bei miniL0CK3R, {username}!")
-                self.destroy()
-                ctk.set_appearance_mode("dark")
-                ctk.set_default_color_theme("blue")
-                app = GUI(passwordList)
-                app.mainloop()
-                
-            else:
-                mbox.showerror("Register", "Benutzername ist bereits vergeben!")
+        if len(username) > 3 and len(password) > 3:
+            if self.action == "login":
+                passwordList = []
+                login = dbf.L0CKin(DBMS, username, password)
+                if login == True:
+                    userdata = dbf.readUserdata(DBMS, username)
+                    for i in range(len(userdata["password_cards"])):
+                        passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+                    mbox.showinfo("Login", f'Willkommen zurück, {username}!\nLetzter Zugriff: {userdata["latest_access"]}')
+                    self.destroy()
+                    ctk.set_appearance_mode("dark")
+                    ctk.set_default_color_theme("blue")
+                    app = GUI(passwordList)
+                    app.mainloop()
+                    
+                else:
+                    mbox.showerror("Login", "Benutzername oder Passwort ist falsch!")
+            
+            elif self.action == "register":
+                passwordList = []
+                login = dbf.R3gister(DBMS, username, password)
+                if login == True:
+                    userdata = dbf.readUserdata(DBMS, username)
+                    for i in range(len(userdata["password_cards"])):
+                        passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
+                    mbox.showinfo("Register", f"Willkommen bei miniL0CK3R, {username}!")
+                    self.destroy()
+                    ctk.set_appearance_mode("dark")
+                    ctk.set_default_color_theme("blue")
+                    app = GUI(passwordList)
+                    app.mainloop()
+                    
+                else:
+                    mbox.showerror("Register", "Benutzername ist bereits vergeben!")
+        else:
+            mbox.showerror("Login", "Benutzername und Passwort müssen mindestens 4 Zeichen haben!")
 
             
 class GUI(ctk.CTk):
@@ -306,7 +313,7 @@ class GUI(ctk.CTk):
         self.menu = ctk.CTkFrame(self, height= 100, corner_radius= 10, bg_color="#242424", fg_color="#242424")
         self.menu.grid(row= 1, column= 0, sticky= "ew")
         
-        self.leaveButton = ctk.CTkButton(self.menu, text="Beenden", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:os.execv(sys.executable, ['python'] + sys.argv))
+        self.leaveButton = ctk.CTkButton(self.menu, text="Abmelden", fg_color="#f0738c", width= 100, corner_radius= 15, hover_color="#c32a3c", command=lambda:os.execv(sys.executable, ['python'] + sys.argv))
         self.leaveButton.pack(side="right", padx= 10, pady= 10, fill="x", expand=True)
         
         self.addButton = ctk.CTkButton(self.menu, text="Hinzufügen", fg_color="#7978dc", width= 100, corner_radius= 15, hover_color="#2a2fc3", command=lambda:self.addPassword())
@@ -330,7 +337,6 @@ class GUI(ctk.CTk):
                 passwordList.append((userdata["password_cards"][i]["card_id"], userdata["password_cards"][i]["website"], userdata["password_cards"][i]["email"], userdata["password_cards"][i]["password"]))
             self.password_scroll.values = passwordList
             self.password_scroll.refresh()
-
 
 if __name__ == "__main__":
     login = Login()

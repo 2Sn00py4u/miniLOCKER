@@ -10,7 +10,6 @@ from datetime import date
 
 
 USERDATA = {
-    "user": "admin",
     "latest_access": str(date.today()),
     "password_cards": [
         {
@@ -225,17 +224,9 @@ def closeConnection(DBMS: db.DBMS) -> None:
     Erg.: Verbindung zur DB wird geschlossen
     """
     DBMS.disconnectDB()
-    
-""" --- Test ---
-DMBS = db.DBMS("backend\\l0ck3rdb.duckdb")
-print(deleteUser(DMBS, "user"))"""
-#DBMS = build_L0CK3R_DB("backend\\l0ck3rdb.duckdb")
-#print(readUserdata(DBMS, "toni"), type(readUserdata(DBMS, "toni")))   
+      
 """
 DBMS = build_L0CK3R_DB("backend\\l0ck3rdb.duckdb")
-
-
-#print(readUserdata(DBMS, "admin"),type(readUserdata(DBMS, "admin")))
 
 USERDATA["password_cards"].append(
     {
@@ -270,21 +261,24 @@ USERDATA["password_cards"].append(
     }
 )
 
+USERDATA["password_cards"].append(
+    {
+        "card_id": "6",
+        "website": "www.github.com",
+        "email": "admin@github.com",
+        "password": "GitAdmin123",
+    }
+)
 
+USERDATA["password_cards"].append(
+    {
+        "card_id": "7",
+        "website": "www.facebook.com",
+        "email": "admin@facebook.com",
+        "password": "FaceAdmin123",
+    }
+)
 
 print(setUserdata(DBMS, "admin", USERDATA))
-
 print(readUserdata(DBMS, "admin"),type(readUserdata(DBMS, "admin")))
-
-print(deletePasswordCard(DBMS, "admin", "3"))
-print(readUserdata(DBMS, "admin"),type(readUserdata(DBMS, "admin")))
-
-print(L0CKin(DBMS, "admin", "admin"))
-print(L0CKin(DBMS, "admin", "wrongpassword"))
-print(R3gister(DBMS, "admin1", "admin1"))
-print(L0CKin(DBMS, "admin1", "admin1"))
-print(L0CKin(DBMS, "admin1", "wrongpassword"))
-print(updateLogin(DBMS, "admin", "admin2", "admin2"))
-print(L0CKin(DBMS, "admin2", "admin2"))
-
-print(readUserdata(DBMS, "admin2"))"""
+"""

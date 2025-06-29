@@ -69,9 +69,3 @@ def compare_encrypted(password_guess: str, key_guess: str, encrypted_password: b
         
     except:
         return "couldn't encrypt password"
-
-
-""" --- Test ---
-print(hash:=encrypting("admin", "admin"))
-print(decrypting(hash, "admin"))
-print(compare_encrypted("admin", "admin", hash))"""
